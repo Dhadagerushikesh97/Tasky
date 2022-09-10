@@ -1,11 +1,10 @@
 const taskContainer = document.querySelector(".task__container");
-console.log(taskContainer);
 const generateNewCard = (taskData) =>`
-                <div class="col-md-6 col-lg-4" id=${taskData.id}>
+                <div class="col-md-6 col-lg-4">
                     <div class="card">
                         <div class="card-header d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-outline-success"><i class="fa-solid fa-pencil"></i></button>
-                            <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></button>
+                            <button type="button" class="btn btn-outline-danger id=${taskData.id} onclick="deleteCard.apply(this,arguments)"><i class="fa-solid fa-trash-can" id=${taskData.id} onclick="deleteCard.apply(this,arguments)"></i></button>
                         </div>
                         <img src=${taskData.imageUrl}>
                         <div class="card-body">
@@ -23,16 +22,16 @@ const generateNewCard = (taskData) =>`
                 </div>`;
 
 
-const globalStore=[];
+var globalStore=[];
 
 const loadInitialCardData = () => {
     // local storage to get tasky card data
     const getCardData = localStorage.getItem("tasky");
     // convert from string to normal object
     const {cards} = JSON.parse(getCardData);
-    // loop over those of task object to create HTML card,inject it to DOM
+    // loop over those of task object to create HTML card
     cards.map((cardObject) => {
-        
+        // inject it to DOM
         taskContainer.insertAdjacentHTML("beforeend",generateNewCard(cardObject)); 
 
         // update our globalstore
@@ -56,7 +55,24 @@ const saveChanges = () =>{
     localStorage.setItem("tasky",JSON.stringify({cards:globalStore}));
 }; 
 
-const deleteCard = () =>{ 
+const deleteCard = (event) =>{
+    event = window.event;
+    
+    // id
+    const targetId = event.target.id;
 
+const tagname=event.target.tagName; // button in capital letters
+    // match the id of the element with the id inside the gloabalstore
+    // if match found remove
+
+    globalStore = globalStore.filter((cardObject)=> cardObject.id !== targetId);
+    localStorage.setItem("tasky",JSON.stringify({cards:globalStore}));
+    // contac parent
+    if(tagname==="BUTTON"){
+        return taskContainer.removeChild(event.target.parentNode.parentNode.parentNode);
+    }
+    else{
+        return taskContainer.removeChild(event.target.parentNode.parentNode.parentNode.parentNode);
+    }
 
 };
